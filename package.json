@@ -2,19 +2,24 @@
   "name": "pika-ts",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "/dist"
+    "lib/**/*"
   ],
   "scripts": {
     "build": "tsc",
     "test": "vitest",
     "publish": "tsc && pnpm publish"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
+  "keywords": [
+    "pika",
+    "amqp",
+    "rabbitmq",
+    "typescript"
+  ],
+  "author": "Maurizio Crocci",
+  "license": "ISC",
   "devDependencies": {
     "@types/amqplib": "^0.10.4",
     "@types/node": "^20.10.4",
