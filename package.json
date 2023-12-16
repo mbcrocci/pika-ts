@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest",
-    "publish": "tsc && pnpm publish"
+    "push": "tsc && pnpm publish"
   },
   "keywords": [
     "pika",
