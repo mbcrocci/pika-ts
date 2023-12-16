@@ -31,7 +31,7 @@ export class PikaImpl<Exchanges extends string, Events extends string>
     onMessage: ConsumerHandler<T>
   ) {
     if (!this.connection) {
-      this.connect(this.url);
+      await this.connect(this.url);
     }
 
     const ch = await this.connection!.createChannel();
