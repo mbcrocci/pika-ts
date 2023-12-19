@@ -1,1 +1,1 @@
-export { PikaImpl as Pika } from "./pika";
+export { AMQPPika as Pika } from "./pika";
