@@ -17,7 +17,6 @@ export class AMQPPika<Exchanges extends string, Events extends string>
   implements Pika<Exchanges, Events>
 {
   private constructor(
-    private url: string,
     private connection: Connection,
     private pubChannel: Channel,
   ) {}
@@ -33,7 +32,7 @@ export class AMQPPika<Exchanges extends string, Events extends string>
       throw new Error("can't inititalize publishing channel");
     }
 
-    return new AMQPPika<Exchanges, Events>(url, conn, pubChannel);
+    return new AMQPPika<Exchanges, Events>(conn, pubChannel);
   }
 
   private async consume<M>(

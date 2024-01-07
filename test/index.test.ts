@@ -21,11 +21,11 @@ describe("test pika ", () => {
 
     //const h = new InMemoryPika();
 
-    h.on("hello", "hello.world", async (_) => {
+    h.on("hello", "hello.world", async () => {
       receivedEvents.hello.world += 1;
     });
 
-    h.on("world", "world.hello", async (_) => {
+    h.on("world", "world.hello", async () => {
       receivedEvents.world.hello += 1;
     });
 
@@ -63,11 +63,11 @@ describe("test pika ", () => {
 
     const h = new InMemoryPika<SomeExchanges, SomeEvents>();
 
-    h.on("hello", "hello.world", async (_) => {
+    h.on("hello", "hello.world", async () => {
       receivedEvents.hello.world += 1;
     });
 
-    h.on("world", "world.hello", async (_) => {
+    h.on("world", "world.hello", async () => {
       receivedEvents.world.hello += 1;
     });
 

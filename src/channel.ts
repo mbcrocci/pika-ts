@@ -1,4 +1,5 @@
 import * as amqp from "amqplib";
+import { destr } from "destr";
 
 export interface Channel {
   consume: (
@@ -31,7 +32,7 @@ export class AQMPChannel implements Channel {
       }
 
       try {
-        const data = JSON.parse(msg.content.toString()) as T;
+        const data = destr<T>(msg.content.toString());
         await onMessage(data);
 
         this.ch.ack(msg);

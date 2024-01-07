@@ -53,4 +53,5 @@ const pika = new InMemoryPika();
 
 pika.on("hello", "hello.world", async (msg: MyType) => {});
 pika.publish("world", "world.hello", { hello: "world" });
+`
 ```
