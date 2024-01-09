@@ -1,11 +1,13 @@
 import * as amqp from "amqplib";
 import { destr } from "destr";
+import { ConsumerHandler, ErrorHandler } from "./pika";
 
 export interface Channel {
   consume: (
     exchange: string,
     topic: string,
-    onMessage: (msg: any) => Promise<void>,
+    onMessage: ConsumerHandler<any>,
+    onError?: ErrorHandler,
   ) => Promise<void>;
 
   publish: (exchange: string, topic: string, msg: unknown) => Promise<void>;
@@ -17,7 +19,8 @@ export class AQMPChannel implements Channel {
   async consume<T>(
     exchange: string,
     topic: string,
-    onMessage: (msg: T) => Promise<void>,
+    onMessage: ConsumerHandler<T>,
+    onError?: ErrorHandler,
   ) {
     await this.ch.assertExchange(exchange, "topic", { durable: true });
 
@@ -28,16 +31,27 @@ export class AQMPChannel implements Channel {
 
     await this.ch.consume(q.queue, async (msg) => {
       if (!msg) {
+        console.error("no message");
         return;
       }
+
+      let reject = false;
 
       try {
         const data = destr<T>(msg.content.toString());
         await onMessage(data);
-
-        this.ch.ack(msg);
       } catch (err) {
-        this.ch.nack(msg);
+        reject = true;
+
+        if (onError) {
+          reject = await onError(wrapError(err));
+        }
+      } finally {
+        if (reject) {
+          this.ch.nack(msg);
+        } else {
+          this.ch.ack(msg);
+        }
       }
     });
   }
@@ -47,4 +61,12 @@ export class AQMPChannel implements Channel {
 
     this.ch.publish(exchange, topic, body);
   }
+}
+
+function wrapError(err: unknown): Error {
+  if (err instanceof Error) {
+    return err;
+  }
+
+  return new Error(String(err));
 }

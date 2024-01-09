@@ -1,14 +1,18 @@
-import * as amqp from "amqplib";
 import { AMQPConnection, Connection } from "./connection";
 import { Channel } from "./channel";
 
-type ConsumerHandler<M> = (msg: M) => Promise<void>;
+export type ConsumerHandler<M> = (msg: M) => Promise<void>;
+
+/** @returns Promise<boolean> indicates if it should reject the message and requeue or not
+ * */
+export type ErrorHandler = (e: Error) => Promise<boolean>;
 
 export interface Pika<Exchanges extends string, Events extends string> {
   on: <T>(
     exchange: Exchanges,
     event: Events,
     onMessage: ConsumerHandler<T>,
+    oneError?: ErrorHandler,
   ) => void;
   publish: <T>(exchange: Exchanges, event: Events, msg: T) => void;
 }
@@ -39,17 +43,23 @@ export class AMQPPika<Exchanges extends string, Events extends string>
     exchange: Exchanges,
     event: Events,
     onMessage: ConsumerHandler<M>,
+    onError?: ErrorHandler,
   ) {
     const ch = await this.connection.createChannel();
     if (!ch) {
       throw new Error("can't create channel");
     }
 
-    await ch.consume(exchange, event, onMessage);
+    await ch.consume(exchange, event, onMessage, onError);
   }
 
-  on<M>(exchange: Exchanges, event: Events, onMessage: ConsumerHandler<M>) {
-    this.consume(exchange, event, onMessage);
+  on<M>(
+    exchange: Exchanges,
+    event: Events,
+    onMessage: ConsumerHandler<M>,
+    onError?: ErrorHandler,
+  ) {
+    this.consume(exchange, event, onMessage, onError);
   }
 
   async publish<T>(exchange: Exchanges, event: Events, msg: T) {
